@@ -66,9 +66,7 @@ export const PokeData = () => {
     getPokemonData();
   }, []);
 
-  return pokemonData === [] ? (
-    <></>
-  ) : (
+  return (
     <div>
       <h1>カントー図鑑</h1>
       <ul
