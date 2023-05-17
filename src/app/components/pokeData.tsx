@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
 
@@ -76,10 +77,12 @@ export const PokeData = () => {
           return (
             <li key={poke.name} style={{ textAlign: "center", width: "108px" }}>
               <Link href={`/pokemon/${poke.name}`}>
-                <img
+                <Image
                   src={poke.image}
                   alt={poke.name}
                   style={{ margin: "auto" }}
+                  width={108}
+                  height={108}
                 />
                 No.{index + 1}
                 <br />
