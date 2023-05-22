@@ -8,6 +8,7 @@ type Pokemon = {
   url: string;
   image: string;
   japaneseName: string;
+  number: number;
 };
 
 export const PokeData = () => {
@@ -43,7 +44,7 @@ export const PokeData = () => {
         const pokemonList = res.data.results;
 
         const pokemonDataList: Pokemon[] = await Promise.all(
-          pokemonList.map(async (poke: any) => {
+          pokemonList.map(async (poke: any, index: number) => {
             const response = await axios.get(poke.url);
             const { sprites, species } = response.data;
             const image = sprites.front_default;
@@ -53,6 +54,7 @@ export const PokeData = () => {
               url: poke.url,
               image: image,
               japaneseName: japaneseName,
+              number: index + 1,
             };
           })
         );
@@ -73,10 +75,11 @@ export const PokeData = () => {
       <ul
         style={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}
       >
-        {pokemonData.map((poke, index) => {
+        {pokemonData.map((poke) => {
+          // console.log(`/pokemon/${poke.number}`);
           return (
             <li key={poke.name} style={{ textAlign: "center", width: "108px" }}>
-              <Link href={`/pokemon/${poke.name}`}>
+              <Link href={`/pokemon/${poke.number}`} passHref>
                 <Image
                   src={poke.image}
                   alt={poke.name}
@@ -84,7 +87,7 @@ export const PokeData = () => {
                   width={108}
                   height={108}
                 />
-                No.{index + 1}
+                No.{poke.number}
                 <br />
                 {poke.japaneseName}
               </Link>
