@@ -38,9 +38,12 @@ export const PokeData = () => {
      */
     const getPokemonData = async () => {
       try {
-        const res = await axios.get(
-          "https://pokeapi.co/api/v2/pokemon?limit=151"
-        );
+        const res = await axios.get("https://pokeapi.co/api/v2/pokemon", {
+          params: {
+            limit: 1000, // 一度に取得するポケモンの数（最大値は1000）
+            offset: 0, // 取得するポケモンの開始位置（0から始まるインデックス）
+          },
+        });
         const pokemonList = res.data.results;
 
         const pokemonDataList: Pokemon[] = await Promise.all(
@@ -71,12 +74,15 @@ export const PokeData = () => {
 
   return (
     <div>
-      <h1>カントー図鑑</h1>
+      <h1 className="text-center text-xl">ポケモン図鑑</h1>
       <ul
         style={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}
       >
         {pokemonData.map((poke) => {
-          // console.log(`/pokemon/${poke.number}`);
+          // ポケモンの情報が描写されていない場合は表示しない
+          if (!poke.image || !poke.number || !poke.japaneseName) {
+            return null;
+          }
           return (
             <li key={poke.name} style={{ textAlign: "center", width: "108px" }}>
               <Link href={`/pokemon/${poke.number}`} passHref>

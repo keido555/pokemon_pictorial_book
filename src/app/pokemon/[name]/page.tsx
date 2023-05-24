@@ -13,8 +13,13 @@ type Pokemon = {
   image: string;
   japaneseName: string;
   stats: any[];
+  types: any[];
 };
 
+/**
+ * #### ポケモンの詳細
+ * @returns
+ */
 const PokemonPage = () => {
   const pathname = usePathname();
 
@@ -24,17 +29,19 @@ const PokemonPage = () => {
   const getPokemonData = useCallback(async (pathname: string) => {
     try {
       const response = await axios.get(`https://pokeapi.co/api/v2${pathname}`);
-      const { name, sprites, species, stats } = response.data;
+      const { name, sprites, species, stats, types } = response.data;
       console.log(response.data);
       const image = sprites.front_default;
       const japaneseName = await getJapaneseName(species.url);
       const ability = stats;
+      const pokemonTypes = types;
       const pokemon: Pokemon = {
         name: name,
         url: `https://pokeapi.co/api/v2${pathname}`,
         image: image,
         japaneseName: japaneseName,
         stats: ability,
+        types: pokemonTypes,
       };
       setPokemonData(pokemon);
     } catch (error) {
@@ -43,6 +50,11 @@ const PokemonPage = () => {
     }
   }, []);
 
+  /**
+   * 日本語化
+   * @param url
+   * @returns
+   */
   const getJapaneseName = async (url: string) => {
     try {
       const res = await axios.get(url);
@@ -65,46 +77,73 @@ const PokemonPage = () => {
     fetchData();
   }, [pathname, getPokemonData]);
 
-  if (!pokemonData) {
-    return <div>Loading...</div>;
-  }
+  if (!pokemonData) return <div>Loading...</div>;
 
-  const HPStyle: React.CSSProperties = {
-    width: `${pokemonData.stats[0].base_stat}px`,
-    height: "8px",
-    margin: "auto 0",
-    background: "pink",
+  /**
+   * #### css
+   * @param baseStat
+   * @returns
+   */
+  const getStatStyle = (baseStat: number): React.CSSProperties => {
+    switch (baseStat) {
+      case 0:
+        return {
+          width: `${pokemonData.stats[baseStat].base_stat}px`,
+          height: "8px",
+          margin: "auto 0",
+          background: "pink",
+        };
+      case 1:
+        return {
+          width: `${pokemonData.stats[baseStat].base_stat}px`,
+          height: "8px",
+          margin: "auto 0",
+          background: "red",
+        };
+      case 2:
+        return {
+          width: `${pokemonData.stats[baseStat].base_stat}px`,
+          height: "8px",
+          margin: "auto 0",
+          background: "blue",
+        };
+      case 3:
+        return {
+          width: `${pokemonData.stats[baseStat].base_stat}px`,
+          height: "8px",
+          margin: "auto 0",
+          background: "yellow",
+        };
+      case 4:
+        return {
+          width: `${pokemonData.stats[baseStat].base_stat}px`,
+          height: "8px",
+          margin: "auto 0",
+          background: "green",
+        };
+      case 5:
+        return {
+          width: `${pokemonData.stats[baseStat].base_stat}px`,
+          height: "8px",
+          margin: "auto 0",
+          background: "purple",
+        };
+      default:
+        return {
+          width: `${baseStat}px`,
+          height: "8px",
+          margin: "auto 0",
+          background: "skyblue",
+        };
+    }
   };
-  const ATStyle: React.CSSProperties = {
-    width: `${pokemonData.stats[1].base_stat}px`,
-    height: "8px",
-    margin: "auto 0",
-    background: "red",
-  };
-  const DFStyle: React.CSSProperties = {
-    width: `${pokemonData.stats[2].base_stat}px`,
-    height: "8px",
-    margin: "auto 0",
-    background: "blue",
-  };
-  const SAStyle: React.CSSProperties = {
-    width: `${pokemonData.stats[3].base_stat}px`,
-    height: "8px",
-    margin: "auto 0",
-    background: "yellow",
-  };
-  const SDStyle: React.CSSProperties = {
-    width: `${pokemonData.stats[4].base_stat}px`,
-    height: "8px",
-    margin: "auto 0",
-    background: "green",
-  };
-  const SPStyle: React.CSSProperties = {
-    width: `${pokemonData.stats[5].base_stat}px`,
-    height: "8px",
-    margin: "auto 0",
-    background: "purple",
-  };
+
+  const HPStyle: React.CSSProperties = getStatStyle(0);
+  const ATStyle: React.CSSProperties = getStatStyle(1);
+  const DFStyle: React.CSSProperties = getStatStyle(2);
+  const SAStyle: React.CSSProperties = getStatStyle(3);
+  const SDStyle: React.CSSProperties = getStatStyle(4);
+  const SPStyle: React.CSSProperties = getStatStyle(5);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -116,11 +155,13 @@ const PokemonPage = () => {
           src={pokemonData.image}
           alt={pokemonData.name}
           style={{ margin: "auto" }}
-          width={108}
-          height={108}
+          width={156}
+          height={156}
         />
         <p>英語名：{pokemonData.name}</p>
-        <p>{pokemonData.url}</p>
+        {pokemonData.types.map((type) => {
+          return <div key={type}>{type.type.name}</div>;
+        })}
         <ul className="text-left">
           <li className="flex">
             <p className="w-20">HP:{pokemonData.stats[0].base_stat}</p>
