@@ -13,6 +13,7 @@ type Pokemon = {
 
 export const PokeData = () => {
   const [pokemonData, setPokemonData] = useState<Pokemon[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   /**
    * #### ポケモン図鑑の日本語化
@@ -80,9 +81,8 @@ export const PokeData = () => {
       >
         {pokemonData.map((poke) => {
           // ポケモンの情報が描写されていない場合は表示しない
-          if (!poke.image || !poke.number || !poke.japaneseName) {
-            return null;
-          }
+          if (!poke.image || !poke.number || !poke.japaneseName) return null;
+
           return (
             <li key={poke.name} style={{ textAlign: "center", width: "108px" }}>
               <Link href={`/pokemon/${poke.number}`} passHref>
